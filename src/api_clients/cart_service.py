@@ -43,15 +43,9 @@ class CartService(BaseService):
         product_id: str | int,
         quantity: int,
     ) -> dict[str, Any]:
-        body = {"quantity": quantity}
-        response = await self._request(
-            "PUT",
-            f"/carts/{cart_id}/product/{product_id}",
-            json=body,
-            expected_status=(200, 204),
-        )
-        result: dict[str, Any] = response.json() if response.content else {}
-        return result
+        """Practice Software Testing has no PUT — POSTing the same product
+        accumulates quantity. This wrapper preserves the semantic name."""
+        return await self.add_item(cart_id, product_id, quantity)
 
     async def remove_item(self, cart_id: str, product_id: str | int) -> None:
         await self._request(
