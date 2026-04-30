@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_api:
+        description: 'Run API tests'
+        type: boolean
+        default: true
+      run_web:
+        description: 'Run web tests'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint & type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Install deps
+        run: uv sync --extra dev
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format check
+        run: uv run ruff format --check .
+      - name: Mypy
+        run: uv run mypy src/
+
+  api-tests:
+    name: API tests
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_api }}
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Install deps
+        run: uv sync
+      - name: Run API tests
+        run: uv run pytest tests/api --alluredir=reports/allure-results-api
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-api
+          path: reports/allure-results-api/
+
+  web-tests:
+    name: Web tests
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_web }}
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Install deps
+        run: uv sync
+      - name: Install Playwright browsers
+        run: uv run playwright install chromium --with-deps
+      - name: Run Web tests
+        run: uv run pytest tests/web --alluredir=reports/allure-results-web
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-web
+          path: reports/allure-results-web/

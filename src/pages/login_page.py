@@ -33,7 +33,8 @@ class LoginPage(BasePage):
         await self.login_button.click()
 
     async def is_loaded(self) -> bool:
-        return await self.email_input.is_visible()
+        await self.email_input.wait_for(state="visible", timeout=10_000)
+        return True
 
     async def error_message(self) -> str:
         return (await self.login_error.text_content()) or ""

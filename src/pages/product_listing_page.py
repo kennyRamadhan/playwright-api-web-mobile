@@ -40,7 +40,8 @@ class ProductListingPage(BasePage):
 
     async def is_loaded(self) -> bool:
         await self._page.wait_for_load_state("domcontentloaded")
-        return await self.search_input.is_visible()
+        await self.search_input.wait_for(state="visible", timeout=10_000)
+        return True
 
     async def product_count(self) -> int:
         await self._page.wait_for_load_state("networkidle")

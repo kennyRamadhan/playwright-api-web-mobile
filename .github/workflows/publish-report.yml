@@ -1,0 +1,63 @@
+name: Publish Allure Report
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Allure result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/
+          pattern: allure-results-*
+          merge-multiple: false
+
+      - name: Merge Allure results
+        run: |
+          mkdir -p combined-results
+          if compgen -G "artifacts/allure-results-*" > /dev/null; then
+            for d in artifacts/allure-results-*; do
+              cp -r "$d"/* combined-results/ 2>/dev/null || true
+            done
+          fi
+          ls -la combined-results || true
+
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@v1
+        with:
+          allure_results: combined-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+          keep_reports: 20
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -195,8 +195,8 @@ See [`docs/CI_OVERVIEW.md`](docs/CI_OVERVIEW.md) for the full pipeline architect
 
 ## Roadmap
 
-- [x] **Day 1**: API tests (Practice Software Testing) + Web UI tests + CI + Allure publishing
-- [ ] **Phase 2**: Mobile testing via Appium ([Sauce Labs Demo App](https://github.com/saucelabs/my-demo-app-rn))
+- [x] **Day 1**: API tests (24 covering auth/products/cart/orders/users) + Web UI tests (10 covering login/browse/search/cart-add) + CI + Allure publishing
+- [ ] **Phase 2**: Mobile testing via Appium ([Sauce Labs Demo App](https://github.com/saucelabs/my-demo-app-rn)); also restoring the deferred web checkout flow with `storageState`-backed auth + API-seeded cart fixtures (5 tests currently skipped with documented reasons)
 - [ ] **Phase 3**: Visual regression (Playwright snapshot comparison)
 - [ ] **Phase 4**: Performance testing layer (locust integration on same API endpoints)
 
