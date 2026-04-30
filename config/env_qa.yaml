@@ -1,0 +1,11 @@
+api:
+  base_url: https://api.practicesoftwaretesting.com
+web:
+  base_url: https://practicesoftwaretesting.com
+credentials:
+  admin:
+    email: admin@practicesoftwaretesting.com
+    password: welcome01
+  customer:
+    email: customer@practicesoftwaretesting.com
+    password: welcome01
