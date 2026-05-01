@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -75,8 +75,14 @@ jobs:
 
       - name: Generate Allure report
         run: |
+          if [ -z "$(ls -A combined-results 2>/dev/null)" ]; then
+            echo "No test results found. Generating placeholder."
+            mkdir -p combined-results
+            cat > combined-results/empty-result.json <<EOF
+          {"name": "No tests executed", "status": "skipped", "stage": "finished"}
+          EOF
+          fi
           allure generate combined-results --clean -o allure-report
-          # Copy the latest history forward so the next run can use it
           if [ -d allure-report/history ]; then
             mkdir -p allure-history
             cp -r allure-report/history/* allure-history/
