@@ -1,5 +1,6 @@
 """LoginPage — sign-in flow for Practice Software Testing."""
 
+import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
@@ -24,17 +25,21 @@ class LoginPage(BasePage):
     def login_error(self) -> Locator:
         return self.by_test_id("login-error")
 
+    @allure.step("Login as {email}")
     async def login(self, email: str, password: str) -> None:
         await self.email_input.fill(email)
         await self.password_input.fill(password)
         await self.login_button.click()
 
+    @allure.step("Submit empty login form")
     async def submit_empty(self) -> None:
         await self.login_button.click()
 
+    @allure.step("Check login page is loaded")
     async def is_loaded(self) -> bool:
         await self.email_input.wait_for(state="visible", timeout=10_000)
         return True
 
+    @allure.step("Read login error message")
     async def error_message(self) -> str:
         return (await self.login_error.text_content()) or ""

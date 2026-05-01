@@ -1,5 +1,6 @@
 """CheckoutPage — multi-step checkout flow."""
 
+import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
@@ -48,6 +49,7 @@ class CheckoutPage(BasePage):
     def payment_error(self) -> Locator:
         return self.by_test_id("payment-error")
 
+    @allure.step("Fill billing address ({city}, {country})")
     async def fill_billing(
         self,
         *,
@@ -63,11 +65,14 @@ class CheckoutPage(BasePage):
         await self.country_input.fill(country)
         await self.postcode_input.fill(postcode)
 
+    @allure.step("Select payment method: {method}")
     async def select_payment(self, method: str = "credit-card") -> None:
         await self.payment_method_select.select_option(method)
 
+    @allure.step("Confirm order")
     async def confirm(self) -> None:
         await self.confirm_button.click()
 
+    @allure.step("Check order is confirmed")
     async def is_confirmed(self) -> bool:
         return await self.confirmation_message.is_visible()

@@ -1,5 +1,6 @@
 """ProductDetailPage — single product view."""
 
+import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
@@ -22,9 +23,11 @@ class ProductDetailPage(BasePage):
     def add_to_cart_button(self) -> Locator:
         return self.by_test_id("add-to-cart")
 
+    @allure.step("Check product detail page is loaded")
     async def is_loaded(self) -> bool:
         return await self.add_to_cart_button.is_visible()
 
+    @allure.step("Add to cart (quantity={quantity})")
     async def add_to_cart(self, quantity: int = 1) -> None:
         if quantity != 1:
             await self.quantity_input.fill(str(quantity))

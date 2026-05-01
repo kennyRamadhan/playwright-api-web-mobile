@@ -1,5 +1,6 @@
 """RegisterPage — user signup."""
 
+import allure
 from playwright.async_api import Locator
 
 from src.models.user import UserCreate
@@ -61,21 +62,23 @@ class RegisterPage(BasePage):
     def email_error(self) -> Locator:
         return self.by_test_id("register-error")
 
+    @allure.step("Check register page is loaded")
     async def is_loaded(self) -> bool:
         await self.email_input.wait_for(state="visible", timeout=10_000)
         return True
 
     async def register(self, user: UserCreate) -> None:
-        await self.first_name_input.fill(user.first_name)
-        await self.last_name_input.fill(user.last_name)
-        await self.dob_input.fill(user.dob or "1990-01-01")
-        # The Angular form expects country first (it triggers postcode lookup).
-        await self.country_input.select_option(value=user.country or "AU")
-        await self.postcode_input.fill(user.postcode or "12345")
-        await self.street_input.fill(user.address or "1 Test Lane")
-        await self.city_input.fill(user.city or "Testville")
-        await self.state_input.fill(user.state or "Test State")
-        await self.phone_input.fill(user.phone or "0400000000")
-        await self.email_input.fill(user.email)
-        await self.password_input.fill(user.password)
-        await self.submit_button.click()
+        with allure.step(f"Register user {user.email}"):
+            await self.first_name_input.fill(user.first_name)
+            await self.last_name_input.fill(user.last_name)
+            await self.dob_input.fill(user.dob or "1990-01-01")
+            # The Angular form expects country first (it triggers postcode lookup).
+            await self.country_input.select_option(value=user.country or "AU")
+            await self.postcode_input.fill(user.postcode or "12345")
+            await self.street_input.fill(user.address or "1 Test Lane")
+            await self.city_input.fill(user.city or "Testville")
+            await self.state_input.fill(user.state or "Test State")
+            await self.phone_input.fill(user.phone or "0400000000")
+            await self.email_input.fill(user.email)
+            await self.password_input.fill(user.password)
+            await self.submit_button.click()

@@ -1,5 +1,6 @@
 """AccountPage — authenticated user dashboard."""
 
+import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
@@ -16,6 +17,7 @@ class AccountPage(BasePage):
     def nav_menu(self) -> Locator:
         return self.by_test_id("nav-menu")
 
+    @allure.step("Check account page is loaded")
     async def is_loaded(self) -> bool:
         await self._page.wait_for_url("**/account**", timeout=10_000)
         return True

@@ -28,8 +28,10 @@ class BasePage:
 
     async def goto(self, path: str | None = None) -> None:
         target = path if path is not None else self.URL_PATH
-        await self._page.goto(f"{self._base_url}{target}")
+        with allure.step(f"Navigate to {target}"):
+            await self._page.goto(f"{self._base_url}{target}")
 
+    @allure.step("Check page is loaded")
     async def is_loaded(self) -> bool:
         return bool(await self._page.title())
 
@@ -37,6 +39,7 @@ class BasePage:
         """Locate by data-test attribute (Practice Software Testing convention)."""
         return self._page.locator(f"[data-test='{test_id}']")
 
+    @allure.step("Capture screenshot: {name}")
     async def take_screenshot(self, name: str) -> None:
         screenshot = await self._page.screenshot(full_page=True)
         allure.attach(
