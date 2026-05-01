@@ -7,6 +7,7 @@ import pytest
 from src.api_clients.auth_service import AuthService
 from src.api_clients.base_service import APIError
 from src.api_clients.user_service import UserService
+from src.utils.assertions import expect_field
 
 
 @allure.epic("Practice Software Testing")
@@ -24,9 +25,12 @@ class TestLogin:
         response = await auth_service.login(email, password)
 
         # Assert
-        assert response.access_token
-        assert response.token_type.lower() == "bearer"
-        assert response.expires_in > 0
+        expect_field(response, "access_token")
+        assert response.token_type.lower() == "bearer", (
+            f"Expected 'bearer', got {response.token_type!r}"
+        )
+        expect_field(response, "expires_in")
+        assert response.expires_in > 0, f"Expected positive expires_in, got {response.expires_in}"
 
     @allure.id("API-AUTH-200-002")
     @allure.title("Token refresh returns a new access token")

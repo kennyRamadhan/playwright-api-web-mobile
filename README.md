@@ -55,6 +55,7 @@ The web UI and REST API share the same backend, enabling hybrid testing strategi
 After every push to `main`, the latest Allure report is published to GitHub Pages at `https://kennyRamadhan.github.io/playwright-api-web-mobile/` (link goes live after the first successful CI run on `main`).
 
 The report includes:
+- **Per-API-call request/response forensics** — every HTTP call routed through BaseService emits a structured step with request body, headers (auth-masked), response status, duration, and response body
 - Pass/fail summary with trend over time
 - Per-test execution detail with steps, screenshots, network logs
 - Categorization by feature area, severity, and test type

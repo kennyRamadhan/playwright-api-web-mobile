@@ -67,6 +67,21 @@ A public, recruiter-facing QA automation portfolio demonstrating production-grad
 
 **Test ID convention:** Detailed in `ALLURE_TEST_IDS.md`. Pattern: `{SURFACE}-{FEATURE}-{HTTP_OR_FLOW}-{NUM}` (e.g. `WEB-LOGIN-001`, `API-AUTH-200-001`).
 
+#### Allure observability layer
+
+Every API call routed through `BaseService._request()` emits a structured Allure step with full request/response forensics:
+
+- **Step name**: `{METHOD} {path}` (e.g. `POST /users/login`)
+- **Pre-request attachments**: request body (JSON), query params (JSON), request headers (JSON, with `Authorization` masked)
+- **Post-response attachments**: response meta (status + duration_ms + url) and full response body
+- **Sensitive masking**: `password` / `token` / `authorization` keys redacted to `***` before attachment — applied recursively to nested objects
+
+This means every recruiter or reviewer opening the Allure report sees exactly what the test exercised at the protocol level — no need to dig through source code to understand what an endpoint contract looks like.
+
+#### Assertion helpers (`src/utils/assertions.py`)
+
+`expect_status()` and `expect_field()` wrap common assertions in `allure.step()` blocks with actual-vs-expected attachments. Use these for any assertion where the value carries diagnostic weight; raw `assert` is fine for trivial truthiness checks where the `AssertionError` message is self-explanatory.
+
 ### 2.5 Package manager: uv
 
 **Decision:** `uv` (modern 2026 standard, written in Rust)

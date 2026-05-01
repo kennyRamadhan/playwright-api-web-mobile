@@ -6,11 +6,47 @@ and response parsing. All API service classes extend this base.
 
 from __future__ import annotations
 
+import json as _json
+import time
 from types import TracebackType
 from typing import Any
 
+import allure
 import httpx
 from pydantic import BaseModel
+
+_SENSITIVE_KEYS = {
+    "password",
+    "current_password",
+    "new_password",
+    "token",
+    "access_token",
+    "refresh_token",
+    "api_key",
+    "authorization",
+}
+
+
+def _mask_sensitive(data: Any) -> Any:
+    """Recursively mask sensitive keys in dicts/lists. Leaves other types alone."""
+    if isinstance(data, dict):
+        return {
+            k: ("***" if k.lower() in _SENSITIVE_KEYS else _mask_sensitive(v))
+            for k, v in data.items()
+        }
+    if isinstance(data, list):
+        return [_mask_sensitive(item) for item in data]
+    return data
+
+
+def _json_dumps(obj: Any) -> str:
+    """Serialize to pretty JSON. Handles Pydantic models; falls back to str()."""
+    if isinstance(obj, BaseModel):
+        obj = obj.model_dump(mode="json")
+    try:
+        return _json.dumps(obj, indent=2, default=str, ensure_ascii=False)
+    except (TypeError, ValueError):
+        return str(obj)
 
 
 class APIError(Exception):
@@ -63,23 +99,74 @@ class BaseService:
         if isinstance(json, BaseModel):
             json = json.model_dump(mode="json", exclude_none=True)
 
-        response = await self._client.request(
-            method=method,
-            url=path,
-            json=json,
-            params=params,
-            headers=self._headers,
-        )
+        with allure.step(f"{method.upper()} {path}"):
+            if json is not None:
+                allure.attach(
+                    _json_dumps(_mask_sensitive(json)),
+                    name="Request body",
+                    attachment_type=allure.attachment_type.JSON,
+                )
+            if params is not None:
+                allure.attach(
+                    _json_dumps(params),
+                    name="Query params",
+                    attachment_type=allure.attachment_type.JSON,
+                )
 
-        expected = (expected_status,) if isinstance(expected_status, int) else expected_status
-        if response.status_code not in expected:
+            headers_for_log: dict[str, str] = dict(self._headers)
+            if "Authorization" in headers_for_log:
+                headers_for_log["Authorization"] = "Bearer ***"
+            allure.attach(
+                _json_dumps(headers_for_log),
+                name="Request headers",
+                attachment_type=allure.attachment_type.JSON,
+            )
+
+            start = time.perf_counter()
+            response = await self._client.request(
+                method=method,
+                url=path,
+                json=json,
+                params=params,
+                headers=self._headers,
+            )
+            duration_ms = round((time.perf_counter() - start) * 1000, 2)
+
+            allure.attach(
+                _json_dumps(
+                    {
+                        "status": response.status_code,
+                        "duration_ms": duration_ms,
+                        "url": str(response.url),
+                    }
+                ),
+                name="Response meta",
+                attachment_type=allure.attachment_type.JSON,
+            )
+
             try:
-                body: Any = response.json()
+                body_for_log: Any = response.json()
+                allure.attach(
+                    _json_dumps(body_for_log),
+                    name="Response body",
+                    attachment_type=allure.attachment_type.JSON,
+                )
             except ValueError:
-                body = response.text
-            raise APIError(response.status_code, body)
+                allure.attach(
+                    response.text,
+                    name="Response body",
+                    attachment_type=allure.attachment_type.TEXT,
+                )
 
-        return response
+            expected = (expected_status,) if isinstance(expected_status, int) else expected_status
+            if response.status_code not in expected:
+                try:
+                    body: Any = response.json()
+                except ValueError:
+                    body = response.text
+                raise APIError(response.status_code, body)
+
+            return response
 
     async def close(self) -> None:
         await self._client.aclose()

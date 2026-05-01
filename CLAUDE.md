@@ -482,6 +482,22 @@ await expect(page.get_by_role("heading", name="My account")).to_be_visible()
 await expect(page.get_by_role("listitem")).to_have_count(9)
 ```
 
+## Allure step visibility for assertions
+
+Use the helpers from `src/utils/assertions.py` for assertions where the
+actual vs expected diff carries diagnostic value:
+
+- `expect_status(response, 200)` — wraps status assertion in Allure step
+- `expect_field(model, "access_token")` — wraps field presence/value check
+
+Raw `assert` remains acceptable for trivial truthiness or when no
+diagnostic attachment is needed. The goal is recruiter-readable reports,
+not assertion ceremony.
+
+API request/response visibility is automatic — `BaseService._request()`
+attaches all request/response data as Allure step children. Tests do
+not need to manually attach API payloads.
+
 ---
 
 # Wait strategy — Web (Playwright)
