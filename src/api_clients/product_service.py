@@ -1,4 +1,8 @@
-"""Product API client for Practice Software Testing."""
+"""ProductService — Practice Software Testing /products endpoints.
+
+Pattern reference: see ``src/api_clients/auth_service.py`` for a fully
+commented example of the ``BaseService`` client pattern.
+"""
 
 from typing import Any
 

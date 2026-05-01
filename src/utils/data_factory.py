@@ -1,4 +1,9 @@
-"""Faker-based data factories for test data generation."""
+"""Faker-based data factories for test data generation.
+
+Pattern reference: see ``src/utils/credential_manager.py`` and
+``src/utils/assertions.py`` for fully commented examples of utility
+modules.
+"""
 
 from faker import Faker
 

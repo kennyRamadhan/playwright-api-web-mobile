@@ -1,4 +1,28 @@
-"""Web UI test fixtures."""
+"""Web-layer fixtures — page-object instances bound to the shared Page.
+
+What belongs here
+-----------------
+Fixtures that construct page-object instances. Each fixture takes the
+shared ``page`` (defined at the repo root) and the session-scoped
+``credentials``, then builds the page object.
+
+Why these are NOT in the root conftest
+--------------------------------------
+API tests do not need page objects. The browser fixture chain
+(``browser`` → ``context`` → ``page``) costs ~1 s of launch time per
+test. Keeping the page-object fixtures here signals that this cost
+should only be paid by web tests.
+
+Why ``yield`` instead of ``return``
+-----------------------------------
+Page objects do not own their own resources (the browser, context, and
+page are owned by their respective fixtures higher up the chain), so
+``return`` would technically work. ``yield`` is used for consistency
+with the API conftest pattern and to leave room for future per-page
+teardown logic without changing the fixture signatures.
+
+Pattern reference for: any future page-object fixture additions.
+"""
 
 from collections.abc import AsyncGenerator
 

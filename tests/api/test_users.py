@@ -1,4 +1,8 @@
-"""API tests for /users endpoints."""
+"""API tests for /users endpoints.
+
+Pattern reference: see ``tests/api/test_auth.py`` for a fully commented
+example of the API test conventions used here.
+"""
 
 import allure
 import pytest

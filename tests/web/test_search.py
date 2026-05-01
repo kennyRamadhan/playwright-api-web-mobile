@@ -1,4 +1,9 @@
-"""Web UI tests for product search."""
+"""Web UI tests for product search.
+
+Pattern reference: see ``tests/web/test_login.py`` for a fully commented
+example of the Web test conventions used here (page-object usage,
+Allure decorators, AAA structure).
+"""
 
 import allure
 

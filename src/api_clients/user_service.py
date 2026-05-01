@@ -1,4 +1,8 @@
-"""User API client for Practice Software Testing."""
+"""UserService — Practice Software Testing /users endpoints.
+
+Pattern reference: see ``src/api_clients/auth_service.py`` for a fully
+commented example of the ``BaseService`` client pattern.
+"""
 
 from typing import Any
 

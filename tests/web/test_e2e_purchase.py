@@ -1,4 +1,8 @@
-"""Web UI tests for cart and end-to-end checkout."""
+"""Web UI tests for cart and end-to-end checkout.
+
+Pattern reference: see ``tests/web/test_login.py`` for a fully commented
+example of the Web test conventions used here.
+"""
 
 import allure
 import pytest

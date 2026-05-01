@@ -1,4 +1,9 @@
-"""API tests for /carts endpoints."""
+"""API tests for /carts endpoints.
+
+Pattern reference: see ``tests/api/test_auth.py`` for a fully commented
+example of the API test conventions used here (Allure decorators,
+AAA structure, assertion-helper choice).
+"""
 
 import allure
 import pytest

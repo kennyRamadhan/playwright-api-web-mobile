@@ -1,4 +1,8 @@
-"""API tests for /invoices endpoints (Practice Software Testing's 'orders')."""
+"""API tests for /invoices endpoints (Practice Software Testing's 'orders').
+
+Pattern reference: see ``tests/api/test_auth.py`` for a fully commented
+example of the API test conventions used here.
+"""
 
 import allure
 import pytest

@@ -1,4 +1,8 @@
-"""Pydantic models for order API contracts."""
+"""Pydantic models for order API contracts.
+
+Pattern reference: see ``src/models/user.py`` for a fully commented
+example of the model conventions used here.
+"""
 
 from pydantic import BaseModel, ConfigDict
 

@@ -26,6 +26,18 @@ This is **NOT** a tutorial repository or a basic Playwright starter. The pattern
 
 ---
 
+## For QA learners
+
+If you're a junior QA engineer or transitioning into automation, this repo is designed to be a learning resource. Start here:
+
+- [docs/LEARNING_PATH.md](docs/LEARNING_PATH.md) — recommended reading order
+- [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) — folder-by-folder guide
+- [docs/CONFTEST_GUIDE.md](docs/CONFTEST_GUIDE.md) — fixture inheritance explained
+
+Representative sample files have full technical comments. Other files follow the same pattern — see file headers for cross-references.
+
+---
+
 ## Demo targets
 
 Tests run against publicly available demo applications. **No real banking/fintech client data is ever used** (NDA compliance).

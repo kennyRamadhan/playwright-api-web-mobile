@@ -1,4 +1,9 @@
-"""Pydantic models for product API contracts."""
+"""Pydantic models for product API contracts.
+
+Pattern reference: see ``src/models/user.py`` for a fully commented
+example of the model conventions (extra="allow", optional fields,
+request vs response shapes).
+"""
 
 from typing import Any
 

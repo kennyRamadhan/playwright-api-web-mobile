@@ -1,4 +1,8 @@
-"""CartPage — shopping cart view."""
+"""CartPage — /checkout step 1, cart contents view.
+
+Pattern reference: see ``src/pages/login_page.py`` for a fully commented
+example of the page-object pattern used here.
+"""
 
 import allure
 from playwright.async_api import Locator

@@ -1,4 +1,8 @@
-"""RegisterPage — user signup."""
+"""RegisterPage — /auth/register signup form.
+
+Pattern reference: see ``src/pages/login_page.py`` for a fully commented
+example of the page-object pattern used here.
+"""
 
 import allure
 from playwright.async_api import Locator

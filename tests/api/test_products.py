@@ -1,4 +1,8 @@
-"""API tests for /products endpoints."""
+"""API tests for /products endpoints.
+
+Pattern reference: see ``tests/api/test_auth.py`` for a fully commented
+example of the API test conventions used here.
+"""
 
 import contextlib
 

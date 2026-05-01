@@ -1,4 +1,8 @@
-"""ProductListingPage — home / product grid."""
+"""ProductListingPage — home / product grid with search, sort, filter.
+
+Pattern reference: see ``src/pages/login_page.py`` for a fully commented
+example of the page-object pattern used here.
+"""
 
 import allure
 from playwright.async_api import Locator
