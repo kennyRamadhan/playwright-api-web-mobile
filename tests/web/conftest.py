@@ -82,6 +82,7 @@ from src.utils.credential_manager import CredentialManager
 # Forensics holder
 # ───────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class _Forensics:
     """Per-test bucket of diagnostic data.
@@ -113,6 +114,7 @@ async def forensics(request: pytest.FixtureRequest) -> _Forensics:
 # Sync hook: record per-test outcome on the item
 # ───────────────────────────────────────────────────────────────────
 
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(
     item: pytest.Item, call: pytest.CallInfo[None]
@@ -138,6 +140,7 @@ def _test_failed(request: pytest.FixtureRequest) -> bool:
 # ───────────────────────────────────────────────────────────────────
 # Browser context with tracing
 # ───────────────────────────────────────────────────────────────────
+
 
 @pytest_asyncio.fixture
 async def context(
@@ -200,6 +203,7 @@ async def context(
 # ───────────────────────────────────────────────────────────────────
 # Page with console/network listeners and failure capture
 # ───────────────────────────────────────────────────────────────────
+
 
 @pytest_asyncio.fixture
 async def page(
@@ -310,10 +314,9 @@ async def _attach_failure_forensics(p: Page, f: _Forensics) -> None:
 # Page-object fixtures (unchanged from prior conftest)
 # ───────────────────────────────────────────────────────────────────
 
+
 @pytest_asyncio.fixture
-async def login_page(
-    page: Page, credentials: CredentialManager
-) -> AsyncGenerator[LoginPage, None]:
+async def login_page(page: Page, credentials: CredentialManager) -> AsyncGenerator[LoginPage, None]:
     yield LoginPage(page, credentials.web_base_url)
 
 
@@ -339,9 +342,7 @@ async def detail_page(
 
 
 @pytest_asyncio.fixture
-async def cart_page(
-    page: Page, credentials: CredentialManager
-) -> AsyncGenerator[CartPage, None]:
+async def cart_page(page: Page, credentials: CredentialManager) -> AsyncGenerator[CartPage, None]:
     yield CartPage(page, credentials.web_base_url)
 
 
