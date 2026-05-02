@@ -288,10 +288,10 @@ Every test follows Arrange-Act-Assert:
 async def test_add_product_to_cart(login_page, product_listing_page):
     # Arrange
     await login_page.login(VALID_USER)
-    
+
     # Act
     await product_listing_page.add_first_product_to_cart()
-    
+
     # Assert
     assert await product_listing_page.get_cart_count() == 1
 ```

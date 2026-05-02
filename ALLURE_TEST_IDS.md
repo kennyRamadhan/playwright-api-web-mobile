@@ -153,10 +153,10 @@ import pytest
 async def test_login_with_valid_credentials(login_page, account_page):
     # Arrange
     valid_user = make_user()
-    
+
     # Act
     await login_page.login(valid_user.email, valid_user.password)
-    
+
     # Assert
     assert await account_page.is_loaded()
 ```

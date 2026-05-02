@@ -1,0 +1,38 @@
+# Pre-commit hooks — run automatically on `git commit`.
+# Install once per clone: `uv run pre-commit install`
+# Run manually on all files: `uv run pre-commit run --all-files`
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # ruff-pre-commit ships its own ruff binary, so the version here is
+    # independent of the dev dependency in pyproject.toml.
+    rev: v0.15.12
+    hooks:
+      - id: ruff           # lint
+        args: [--fix]
+      - id: ruff-format    # formatting
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.20.2
+    hooks:
+      - id: mypy
+        # Match the project's mypy strictness. Files filter mirrors the
+        # CI command (uv run mypy src/) — we do not type-check tests/
+        # at commit time because pytest fixtures use dynamic patterns
+        # that mypy strict-mode flags as false positives.
+        files: ^src/
+        additional_dependencies:
+          - pydantic>=2.0
+          - types-pyyaml
+          - playwright
+          - allure-pytest
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict

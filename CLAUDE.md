@@ -238,6 +238,61 @@ This applies across API and Web (and Mobile in Phase 2).
 
 ---
 
+# Pre-push verification checklist
+
+Before pushing to main, agent MUST run these commands locally to mirror
+what CI checks. Skipping any of these is what caused commit `0c50f4c`'s
+CI failure (ruff format violation slipped through because verification
+only ran `ruff check`).
+
+```bash
+# Format compliance — auto-fixes if violations found
+uv run ruff format .
+
+# Lint — both check and auto-fix
+uv run ruff check . --fix
+
+# Type check — production code only (matches CI scope)
+uv run mypy src/
+
+# Test discovery — verify imports unbroken
+uv run pytest --collect-only
+
+# Optional but recommended: run the test set affected by the change
+uv run pytest tests/<affected-area> -v
+```
+
+If pre-commit framework is installed, the equivalent single command is:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+This catches everything `pre-commit install` would catch on `git commit`,
+across ALL files, regardless of staged status.
+
+## Why both ruff check AND ruff format are needed
+
+These are TWO different commands:
+- `ruff check` validates lint rules (unused imports, unused variables,
+  shadowing, etc.)
+- `ruff format` validates formatting (line length, indentation, quote
+  style, trailing commas, etc.)
+
+CI runs both. Agent verification skipping either is a footgun.
+
+## Workflow when pre-commit is installed
+
+After `uv run pre-commit install`, every `git commit` automatically
+runs the full hook chain. If a hook auto-fixes (e.g. `ruff format`
+fixing trailing whitespace), the commit is BLOCKED — agent must
+re-stage the auto-fixes and commit again.
+
+This is the desired behavior: format violations never enter the commit
+graph, so they can't reach CI.
+
+---
+
 # Retry / loop limits
 
 Don't retry indefinitely. Hard limits:

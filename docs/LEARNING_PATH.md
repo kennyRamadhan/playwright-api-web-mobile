@@ -105,6 +105,10 @@ uv run pytest tests/web -v
 
 # Filter by Allure ID
 uv run pytest tests/ -k "API-AUTH-200-001" -v
+
+# Install pre-commit hooks (one-time setup) — aligns local commits
+# with CI gates so format violations never reach the remote
+uv run pre-commit install
 ```
 
 If a test fails because of a transient issue (the demo backend

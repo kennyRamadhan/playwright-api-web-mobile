@@ -116,6 +116,25 @@ pytest
 
 See [`docs/ENVIRONMENT_SETUP.md`](docs/ENVIRONMENT_SETUP.md) for detailed setup including CI environment.
 
+### Pre-commit hooks (recommended for contributors)
+
+This repo uses `pre-commit` to auto-format and lint code before commit,
+matching CI's gates. Install once per clone:
+
+```bash
+uv run pre-commit install
+```
+
+After this, every `git commit` runs ruff format, ruff check, mypy,
+and other hygiene checks. If any auto-fix runs, re-stage the fixed
+files and commit again.
+
+Run hooks manually against all files at any time:
+
+```bash
+uv run pre-commit run --all-files
+```
+
 ---
 
 ## Repository structure
