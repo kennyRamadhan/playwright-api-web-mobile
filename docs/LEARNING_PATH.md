@@ -50,8 +50,14 @@ defined elsewhere, and you know how to find which file defined them.
 
 ### Step 3 — Understand a complete API test flow (30 min)
 
-Read in this order so the dependencies build naturally:
+Read in this order so the dependencies build naturally. For canonical
+API schemas, the upstream
+[Swagger UI](https://api.practicesoftwaretesting.com/api/documentation)
+is the source of truth. This repo's
+[docs/API_TEST_COVERAGE.md](API_TEST_COVERAGE.md) shows which endpoints
+we exercise, what we discovered, and where the gaps are.
 
+- [ ] Skim `docs/API_TEST_COVERAGE.md` to see what's tested at the API layer
 - [ ] `src/api_clients/base_service.py` — read every comment. This is the foundation
 - [ ] `src/api_clients/auth_service.py` — see how a concrete client is built on top
 - [ ] `src/models/user.py` — see the Pydantic models that validate API responses

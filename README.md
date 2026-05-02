@@ -33,6 +33,7 @@ If you're a junior QA engineer or transitioning into automation, this repo is de
 - [docs/LEARNING_PATH.md](docs/LEARNING_PATH.md) — recommended reading order
 - [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) — folder-by-folder guide
 - [docs/CONFTEST_GUIDE.md](docs/CONFTEST_GUIDE.md) — fixture inheritance explained
+- [docs/API_TEST_COVERAGE.md](docs/API_TEST_COVERAGE.md) — endpoint coverage map + quirks discovered during testing
 
 Representative sample files have full technical comments. Other files follow the same pattern — see file headers for cross-references.
 
