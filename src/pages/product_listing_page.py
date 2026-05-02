@@ -4,10 +4,10 @@ Pattern reference: see ``src/pages/login_page.py`` for a fully commented
 example of the page-object pattern used here.
 """
 
-import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
+from src.utils.web_step import web_step
 
 
 class ProductListingPage(BasePage):
@@ -43,41 +43,41 @@ class ProductListingPage(BasePage):
     def cart_quantity_badge(self) -> Locator:
         return self.by_test_id("cart-quantity")
 
-    @allure.step("Check product listing page is loaded")
+    @web_step("Check product listing page is loaded")
     async def is_loaded(self) -> bool:
         await self._page.wait_for_load_state("domcontentloaded")
         await self.search_input.wait_for(state="visible", timeout=10_000)
         return True
 
-    @allure.step("Read product count")
+    @web_step("Read product count")
     async def product_count(self) -> int:
         await self._page.wait_for_load_state("networkidle")
         return await self.product_cards.count()
 
-    @allure.step("Search for {query}")
+    @web_step("Search for {query}")
     async def search(self, query: str) -> None:
         await self.search_input.fill(query)
         await self.search_submit.click()
         await self._page.wait_for_load_state("networkidle")
 
-    @allure.step("Sort by {value}")
+    @web_step("Sort by {value}")
     async def sort_by(self, value: str) -> None:
         await self.sort_select.select_option(value)
         await self._page.wait_for_load_state("networkidle")
 
-    @allure.step("Filter by category {category_label}")
+    @web_step("Filter by category {category_label}")
     async def filter_by_category(self, category_label: str) -> None:
         await self._page.get_by_label(category_label).first.check()
         await self._page.wait_for_load_state("networkidle")
 
-    @allure.step("Open first product")
+    @web_step("Open first product")
     async def open_first_product(self) -> str:
         first = self.product_cards.first
         name = (await first.locator("[data-test='product-name']").text_content()) or ""
         await first.click()
         return name.strip()
 
-    @allure.step("Read cart quantity badge")
+    @web_step("Read cart quantity badge")
     async def cart_quantity(self) -> int:
         text = (await self.cart_quantity_badge.text_content()) or "0"
         try:

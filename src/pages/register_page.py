@@ -9,6 +9,7 @@ from playwright.async_api import Locator
 
 from src.models.user import UserCreate
 from src.pages.base_page import BasePage
+from src.utils.web_step import web_step
 
 
 class RegisterPage(BasePage):
@@ -66,7 +67,7 @@ class RegisterPage(BasePage):
     def email_error(self) -> Locator:
         return self.by_test_id("register-error")
 
-    @allure.step("Check register page is loaded")
+    @web_step("Check register page is loaded")
     async def is_loaded(self) -> bool:
         await self.email_input.wait_for(state="visible", timeout=10_000)
         return True

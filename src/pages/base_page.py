@@ -36,6 +36,8 @@ from __future__ import annotations
 import allure
 from playwright.async_api import Locator, Page
 
+from src.utils.web_step import web_step
+
 
 class BasePage:
     """Common methods every page object inherits.
@@ -85,7 +87,7 @@ class BasePage:
         with allure.step(f"Navigate to {target}"):
             await self._page.goto(f"{self._base_url}{target}")
 
-    @allure.step("Check page is loaded")
+    @web_step("Check page is loaded")
     async def is_loaded(self) -> bool:
         """Default readiness probe: page has produced a non-empty title.
 
@@ -105,7 +107,7 @@ class BasePage:
         """
         return self._page.locator(f"[data-test='{test_id}']")
 
-    @allure.step("Capture screenshot: {name}")
+    @web_step("Capture screenshot: {name}")
     async def take_screenshot(self, name: str) -> None:
         """Capture a full-page screenshot and attach it to the Allure step.
 

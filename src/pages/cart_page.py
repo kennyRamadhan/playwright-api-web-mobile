@@ -4,10 +4,10 @@ Pattern reference: see ``src/pages/login_page.py`` for a fully commented
 example of the page-object pattern used here.
 """
 
-import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
+from src.utils.web_step import web_step
 
 
 class CartPage(BasePage):
@@ -27,27 +27,27 @@ class CartPage(BasePage):
     def cart_empty_message(self) -> Locator:
         return self._page.get_by_text("The cart is empty", exact=False)
 
-    @allure.step("Check cart page is loaded")
+    @web_step("Check cart page is loaded")
     async def is_loaded(self) -> bool:
         return await self._page.locator("h1").is_visible()
 
-    @allure.step("Read cart item count")
+    @web_step("Read cart item count")
     async def item_count(self) -> int:
         return await self.cart_rows.count()
 
-    @allure.step("Update row {row_index} quantity to {quantity}")
+    @web_step("Update row {row_index} quantity to {quantity}")
     async def update_quantity(self, row_index: int, quantity: int) -> None:
         row = self.cart_rows.nth(row_index)
         qty_input = row.locator("[data-test='product-quantity']")
         await qty_input.fill(str(quantity))
         await qty_input.press("Tab")
 
-    @allure.step("Remove cart row {row_index}")
+    @web_step("Remove cart row {row_index}")
     async def remove_item(self, row_index: int) -> None:
         row = self.cart_rows.nth(row_index)
         await row.locator("[data-test='product-remove']").click()
 
-    @allure.step("Read cart subtotal")
+    @web_step("Read cart subtotal")
     async def subtotal(self) -> float:
         text = (await self.by_test_id("cart-total").text_content()) or "0"
         cleaned = text.replace("$", "").replace(",", "").strip()
@@ -56,6 +56,6 @@ class CartPage(BasePage):
         except ValueError:
             return 0.0
 
-    @allure.step("Proceed to checkout")
+    @web_step("Proceed to checkout")
     async def proceed_to_checkout(self) -> None:
         await self.proceed_button.click()

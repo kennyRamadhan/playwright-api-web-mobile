@@ -82,6 +82,37 @@ This means every recruiter or reviewer opening the Allure report sees exactly wh
 
 `expect_status()` and `expect_field()` wrap common assertions in `allure.step()` blocks with actual-vs-expected attachments. Use these for any assertion where the value carries diagnostic weight; raw `assert` is fine for trivial truthiness checks where the `AssertionError` message is self-explanatory.
 
+#### Web visual forensics
+
+Web tests capture diagnostic artifacts at three layers — symmetric to the API observability layer above, but tuned to UI rather than protocol concerns.
+
+**Per-step screenshots (every test, passed or failed)**
+
+Page object public methods are decorated with `@web_step` (custom decorator in `src/utils/web_step.py`) instead of plain `@allure.step`. The decorator wraps `allure.step` with an automatic post-action viewport screenshot. Reports therefore contain a visual storyboard of the user journey — recruiters see *what happened on screen* at every step, not just step titles.
+
+**Failure forensics (failed only)**
+
+When a web test body fails, the conftest hook + async fixture teardown attaches:
+
+- Final full-page screenshot
+- Page HTML at the moment of failure
+- Console errors and warnings collected during the test
+- Network request failures collected during the test
+- Final page URL
+- Playwright `trace.zip` (replayable in the Playwright trace viewer)
+
+**Playwright tracing (continuous)**
+
+Tracing is started at context creation and stopped at context teardown. The `trace.zip` is attached to Allure only on failure (kept on disk for passes but not attached, so report size stays manageable).
+
+**Why captures live in fixture teardown, not the makereport hook**
+
+`pytest_runtest_makereport` runs synchronously, but Playwright is async-only in this codebase. Rather than wrestle with `loop.run_until_complete()`, the hook only stamps `item.rep_call` with the report; the async `page` and `context` fixture teardowns then decide whether to capture forensics inside the still-live event loop. See `tests/web/conftest.py` for the full pattern.
+
+**Trade-off**
+
+Per-step screenshots add ~200–500 ms per page interaction. Acceptable for portfolio demonstration; for high-volume CI suites this would become opt-in via marker.
+
 ### 2.5 Package manager: uv
 
 **Decision:** `uv` (modern 2026 standard, written in Rust)

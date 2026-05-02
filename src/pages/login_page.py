@@ -14,16 +14,16 @@ to notice:
    ``email_input.fill(...)`` directly.
 
 3. **Allure steps make the action tree readable.** Each public method
-   is wrapped in ``@allure.step(...)`` so the report shows
+   is wrapped in ``@web_step(...)`` so the report shows
    "Login as X" as a node rather than "click(...)" microsteps.
 
 Pattern reference for: every other page object in ``src/pages/``.
 """
 
-import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
+from src.utils.web_step import web_step
 
 
 class LoginPage(BasePage):
@@ -63,7 +63,7 @@ class LoginPage(BasePage):
     # Actions
     # ------------------------------------------------------------------
 
-    @allure.step("Login as {email}")
+    @web_step("Login as {email}")
     async def login(self, email: str, password: str) -> None:
         """Fill the credentials and submit.
 
@@ -75,7 +75,7 @@ class LoginPage(BasePage):
         await self.password_input.fill(password)
         await self.login_button.click()
 
-    @allure.step("Submit empty login form")
+    @web_step("Submit empty login form")
     async def submit_empty(self) -> None:
         """Click submit without filling anything.
 
@@ -84,7 +84,7 @@ class LoginPage(BasePage):
         """
         await self.login_button.click()
 
-    @allure.step("Check login page is loaded")
+    @web_step("Check login page is loaded")
     async def is_loaded(self) -> bool:
         """Override: wait for the email input to be visible.
 
@@ -94,7 +94,7 @@ class LoginPage(BasePage):
         await self.email_input.wait_for(state="visible", timeout=10_000)
         return True
 
-    @allure.step("Read login error message")
+    @web_step("Read login error message")
     async def error_message(self) -> str:
         """Return the visible error text, or empty string if absent.
 

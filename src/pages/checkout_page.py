@@ -4,10 +4,10 @@ Pattern reference: see ``src/pages/login_page.py`` for a fully commented
 example of the page-object pattern used here.
 """
 
-import allure
 from playwright.async_api import Locator
 
 from src.pages.base_page import BasePage
+from src.utils.web_step import web_step
 
 
 class CheckoutPage(BasePage):
@@ -53,7 +53,7 @@ class CheckoutPage(BasePage):
     def payment_error(self) -> Locator:
         return self.by_test_id("payment-error")
 
-    @allure.step("Fill billing address ({city}, {country})")
+    @web_step("Fill billing address ({city}, {country})")
     async def fill_billing(
         self,
         *,
@@ -69,14 +69,14 @@ class CheckoutPage(BasePage):
         await self.country_input.fill(country)
         await self.postcode_input.fill(postcode)
 
-    @allure.step("Select payment method: {method}")
+    @web_step("Select payment method: {method}")
     async def select_payment(self, method: str = "credit-card") -> None:
         await self.payment_method_select.select_option(method)
 
-    @allure.step("Confirm order")
+    @web_step("Confirm order")
     async def confirm(self) -> None:
         await self.confirm_button.click()
 
-    @allure.step("Check order is confirmed")
+    @web_step("Check order is confirmed")
     async def is_confirmed(self) -> bool:
         return await self.confirmation_message.is_visible()

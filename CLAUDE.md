@@ -546,6 +546,21 @@ Locator priority (Web):
 
 Always use the highest-priority locator available. Prefer `data-test` attributes from Practice Software Testing markup (e.g. `get_by_test_id("nav-sign-in")`) over CSS class selectors.
 
+## Web step instrumentation
+
+For page object public methods, use `@web_step` (from `src/utils/web_step.py`)
+NOT `@allure.step`. The custom decorator adds automatic post-action
+screenshots which produce visual storyboards in Allure reports.
+
+`@allure.step` (or body-level `with allure.step(...)`) remains acceptable
+for non-page-object code where no Playwright `Page` is in scope (e.g.
+utility functions, assertion helpers).
+
+Failure forensics — final screenshot, HTML, Playwright trace, console
+logs, network failures — are handled automatically by the
+`tests/web/conftest.py` hook + async fixture teardown layer. Tests do
+NOT need to manually capture failure state.
+
 ---
 
 # Wait strategy — Mobile (Phase 2 reference)
