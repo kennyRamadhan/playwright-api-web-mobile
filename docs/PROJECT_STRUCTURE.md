@@ -123,8 +123,38 @@ src/models/
 src/utils/
 ├── credential_manager.py    # Load credentials/URLs from YAML + .env
 ├── data_factory.py          # Faker-based test data factories
-└── assertions.py            # Allure-aware assertion helpers (expect_status, expect_field)
+├── assertions.py            # Allure-aware assertion helpers (expect_status, expect_field)
+├── web_step.py              # @web_step decorator: allure.step + auto-screenshot (async)
+└── mobile_step.py           # @mobile_step decorator: allure.step + auto-screenshot (sync)
 ```
+
+### src/mobile/
+
+**Purpose:** Appium-driven mobile test layer targeting the
+[Sauce Labs my-demo-app-rn](https://github.com/saucelabs/my-demo-app-rn)
+React Native demo. **Sync, not async** — Appium Python Client has no
+async API; see `ARCHITECTURE.md` for rationale.
+
+**Pattern:** every screen extends `BaseScreen`. The driver factory is
+the single choke point for platform abstraction (Android first,
+iOS-ready stub).
+
+```
+src/mobile/
+├── driver_factory.py        # get_driver(platform) — Appium WebDriver
+├── base_screen.py           # Foundation — every screen extends this
+├── capabilities/
+│   ├── android.py           # UiAutomator2 caps (env-overridable)
+│   └── ios.py               # Stub — raises NotImplementedError (Phase 2.2)
+└── screens/
+    ├── login_screen.py      # Sign-in flow (canonical example)
+    ├── product_list_screen.py
+    ├── product_detail_screen.py
+    ├── cart_screen.py
+    └── checkout_screen.py
+```
+
+**Sample to read first:** `login_screen.py` — fully commented.
 
 **Samples to read first:** `credential_manager.py` and `assertions.py`
 — both fully commented.
@@ -147,12 +177,18 @@ tests/
 │   ├── test_products.py     # /products listing, filtering, admin mutations
 │   ├── test_cart.py         # /carts add/update/remove
 │   └── test_orders.py       # /orders lifecycle
-└── web/
-    ├── conftest.py          # Web-only fixtures (page objects)
-    ├── test_login.py        # Login form happy/error paths
-    ├── test_search.py       # Product search + empty state
-    ├── test_account.py      # Register + post-login browse
-    └── test_e2e_purchase.py # End-to-end cart/checkout flows
+├── web/
+│   ├── conftest.py          # Web-only fixtures (page objects)
+│   ├── test_login.py        # Login form happy/error paths
+│   ├── test_search.py       # Product search + empty state
+│   ├── test_account.py      # Register + post-login browse
+│   └── test_e2e_purchase.py # End-to-end cart/checkout flows
+└── mobile/
+    ├── conftest.py          # Sync driver + screen fixtures + failure forensics
+    ├── test_login.py        # MOB-LOGIN-001/002
+    ├── test_browse.py       # MOB-BROWSE-001/002
+    ├── test_cart.py         # MOB-CART-001
+    └── test_checkout.py     # MOB-CHECKOUT-001 (E2E purchase)
 ```
 
 ### tests/conftest.py at root vs nested

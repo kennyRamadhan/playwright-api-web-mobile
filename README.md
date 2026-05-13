@@ -34,6 +34,7 @@ If you're a junior QA engineer or transitioning into automation, this repo is de
 - [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) — folder-by-folder guide
 - [docs/CONFTEST_GUIDE.md](docs/CONFTEST_GUIDE.md) — fixture inheritance explained
 - [docs/API_TEST_COVERAGE.md](docs/API_TEST_COVERAGE.md) — endpoint coverage map + quirks discovered during testing
+- [docs/MOBILE_TESTING_GUIDE.md](docs/MOBILE_TESTING_GUIDE.md) — running mobile tests locally and the Appium architecture
 
 Representative sample files have full technical comments. Other files follow the same pattern — see file headers for cross-references.
 
@@ -100,6 +101,9 @@ uv run pytest tests/api
 # Run only Web tests
 uv run pytest tests/web
 
+# Run only Mobile tests (requires Android emulator + Appium — see below)
+uv run pytest tests/mobile -m mobile
+
 # Generate Allure report
 uv run allure serve reports/allure-results
 ```
@@ -115,6 +119,28 @@ pytest
 ```
 
 See [`docs/ENVIRONMENT_SETUP.md`](docs/ENVIRONMENT_SETUP.md) for detailed setup including CI environment.
+
+### Mobile tests (Android emulator required)
+
+Mobile tests need an Android emulator and a running Appium server. One-time setup:
+
+```bash
+npm install -g appium                       # Appium 2 runtime
+appium driver install uiautomator2          # Android driver
+python scripts/download_apk.py              # fetch demo APK (gitignored, ~30 MB)
+```
+
+Then in two terminals:
+
+```bash
+# Terminal 1
+appium                                      # start Appium server on :4723
+
+# Terminal 2
+uv run pytest tests/mobile -m mobile -v     # emulator must be running
+```
+
+See [`docs/MOBILE_TESTING_GUIDE.md`](docs/MOBILE_TESTING_GUIDE.md) for the full walkthrough.
 
 ### Pre-commit hooks (recommended for contributors)
 

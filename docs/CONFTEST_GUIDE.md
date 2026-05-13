@@ -17,7 +17,7 @@ The conftest files in this repo:
 - `tests/conftest.py`
 - `tests/api/conftest.py`
 - `tests/web/conftest.py`
-- `tests/mobile/conftest.py` *(planned for Phase 2 — not yet present)*
+- `tests/mobile/conftest.py`
 
 This is not duplication. It is hierarchical fixture discovery, which
 is a first-class pytest feature.
@@ -144,10 +144,30 @@ objects also depend on the `page` fixture (which costs ~1 s of
 browser launch per test). Keeping them in the web conftest signals
 that this cost is paid only when running web tests.
 
-### tests/mobile/conftest.py (Phase 2)
+### tests/mobile/conftest.py
 
-**Purpose:** Appium driver, Sauce Labs config, mobile-specific page
-objects. Currently a placeholder; will be added when Phase 2 begins.
+**Purpose:** Appium driver lifecycle, screen-object fixtures, and
+failure forensics (page source, logcat, current activity, final
+screenshot) for the mobile testing layer.
+
+**What belongs here:**
+
+- `driver` — sync fixture creating an Appium WebDriver via
+  `src/mobile/driver_factory.get_driver("android")`. Teardown attaches
+  forensics if the test failed, then calls `driver.quit()`.
+- `login_screen`, `product_list_screen`, `product_detail_screen`,
+  `cart_screen`, `checkout_screen` — screen objects constructed against
+  the shared `driver` fixture.
+- `pytest_runtest_makereport` hook — stamps the call-phase report onto
+  the item so the sync `driver` teardown can read it and decide
+  whether to capture failure forensics.
+
+**Why sync, not async:** the Appium Python Client is sync. Wrapping it
+in async adds no concurrency benefit (mobile gestures are inherently
+sequential). Fixtures use plain `@pytest.fixture` rather than
+`@pytest_asyncio.fixture`, and tests are plain `def` rather than
+`async def`. This is a deliberate architectural choice — see
+`ARCHITECTURE.md` for the full rationale.
 
 ---
 

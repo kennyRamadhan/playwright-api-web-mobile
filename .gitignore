@@ -43,3 +43,11 @@ config/credentials.local.yaml
 # OS
 .DS_Store
 Thumbs.db
+
+# Mobile testing
+apps/
+*.apk
+*.ipa
+
+# Claude Code session config
+.claude/

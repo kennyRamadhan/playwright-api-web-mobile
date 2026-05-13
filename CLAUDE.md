@@ -618,9 +618,15 @@ NOT need to manually capture failure state.
 
 ---
 
-# Wait strategy — Mobile (Phase 2 reference)
+# Wait strategy — Mobile (Appium)
 
-> **Phase 2 status:** Mobile testing via Appium + Sauce Labs `my-demo-app-rn` is upcoming, not yet implemented. The rules below apply once mobile work begins.
+> **Status:** Mobile layer is live. Tests live in `tests/mobile/`,
+> screen objects in `src/mobile/screens/`. The mobile layer is **sync,
+> not async** — Appium Python Client has no async API and mobile
+> gestures are sequential. Plain `def test_...` and plain
+> `@pytest.fixture`. Public screen-object methods use `@mobile_step`
+> (sync analogue of `@web_step`). See `docs/MOBILE_TESTING_GUIDE.md`
+> for the full guide.
 
 **NEVER use `time.sleep` for UI state waiting.**
 
@@ -679,7 +685,7 @@ Avoid XPath when Accessibility ID is available — more stable, faster.
 
 ---
 
-# Mobile element interaction (Phase 2 reference)
+# Mobile element interaction (Appium)
 
 Decision tree — Appium vs ADB:
 

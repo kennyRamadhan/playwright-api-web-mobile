@@ -62,9 +62,13 @@ For web tests, the variant is optional. Use it when there are multiple flavors o
 MOB-{FEATURE}-{NUM}
 ```
 
-**Examples (planned):**
-- `MOB-LOGIN-001` — login with valid credentials on Android
-- `MOB-CART-001` — add product to cart via mobile app
+**Examples (implemented):**
+- `MOB-LOGIN-001` — valid login with standard user
+- `MOB-LOGIN-002` — invalid password shows error message
+- `MOB-BROWSE-001` — product list shows multiple items
+- `MOB-BROWSE-002` — tap product opens product detail screen
+- `MOB-CART-001` — adding product to cart increments cart count
+- `MOB-CHECKOUT-001` — E2E: login, add to cart, checkout, place order
 
 ---
 

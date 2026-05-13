@@ -1,0 +1,111 @@
+name: Mobile Tests
+
+# Triggered separately from main CI because emulator boot is slow.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/mobile/**'
+      - 'tests/mobile/**'
+      - 'src/utils/mobile_step.py'
+      - 'scripts/download_apk.py'
+      - '.github/workflows/mobile-tests.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/mobile/**'
+      - 'tests/mobile/**'
+      - 'src/utils/mobile_step.py'
+      - 'scripts/download_apk.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-tests:
+    name: Android emulator tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM (required for Android emulator)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up JDK 17 (Appium server prereq)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Node.js 20 (Appium runtime)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Appium 2 + UiAutomator2 driver
+        run: |
+          npm install -g appium@latest
+          appium driver install uiautomator2
+          appium --version
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Cache APK
+        id: apk-cache
+        uses: actions/cache@v4
+        with:
+          path: apps/Android-MyDemoAppRN.apk
+          key: my-demo-app-rn-v1.3.0-apk
+
+      - name: Download APK
+        if: steps.apk-cache.outputs.cache-hit != 'true'
+        run: uv run python scripts/download_apk.py
+
+      - name: Start Appium server in background
+        run: |
+          nohup appium --log-level info > appium.log 2>&1 &
+          # Wait briefly for the server to bind
+          sleep 3
+          curl -s http://127.0.0.1:4723/status || (cat appium.log && exit 1)
+
+      - name: Run mobile tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb wait-for-device
+            adb shell input keyevent 82
+            uv run pytest tests/mobile -m mobile -v \
+              --alluredir=reports/allure-results-mobile
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-mobile
+          path: reports/allure-results-mobile/
+
+      - name: Upload Appium log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-log
+          path: appium.log

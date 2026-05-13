@@ -2,7 +2,7 @@ name: Publish Allure Report
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["CI", "Mobile Tests"]
     types: [completed]
     branches: [main]
 

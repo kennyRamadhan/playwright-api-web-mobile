@@ -88,6 +88,15 @@ user-action-named, and Playwright `Locator` resolution is lazy.
 `API-AUTH-200-001` or `WEB-LOGIN-001`, and how these enable filterable,
 trendable reports.
 
+### Step 5b — Mobile test architecture (Phase 2, optional for now)
+
+- [ ] Skim [`docs/MOBILE_TESTING_GUIDE.md`](MOBILE_TESTING_GUIDE.md)
+- [ ] Open `src/mobile/screens/login_screen.py` to see the screen-object pattern
+- [ ] Open `tests/mobile/test_login.py` to see the test pattern (sync, not async)
+
+**Goal:** understand the sync-vs-async architectural choice for mobile
+and how the same AAA + Allure pattern carries across API → Web → Mobile.
+
 ### Step 6 — Run the tests yourself (15 min)
 
 ```bash

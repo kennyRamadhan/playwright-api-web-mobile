@@ -450,10 +450,46 @@ Template provided in `README_TEMPLATE.md`.
 
 ---
 
+## 9b. Mobile testing layer
+
+The mobile layer mirrors the web layer's screen-object pattern but is
+**sync rather than async**. This is a deliberate architectural choice
+rooted in tool reality:
+
+- The Appium Python Client is sync (no async API exists)
+- Mobile gestures (tap, swipe, type) are inherently sequential
+- Async wrapping adds CPU/syntax overhead with no concurrency benefit
+
+The framework remains async for API + Web because:
+
+- `httpx` supports async clients for concurrent HTTP
+- Playwright is async-first
+- Parallel test execution benefits from async I/O
+
+**Async-where-it-helps, sync-where-it-doesn't is a senior engineering
+posture — consistency for its own sake is a code smell.**
+
+Mobile observability mirrors web observability:
+
+- `@mobile_step` decorator captures post-action screenshots
+- Failure forensics: page source XML, logcat tail, current activity,
+  final screenshot — attached to Allure on test failure
+
+iOS readiness: the driver factory accepts `platform="ios"` and the iOS
+capabilities file exists as a stub raising `NotImplementedError`. Real
+iOS support is deferred to Phase 2.2 because it requires a macOS host
+with Xcode. Screen objects already prefer
+`AppiumBy.ACCESSIBILITY_ID` for cross-platform locator portability.
+
+See [`docs/MOBILE_TESTING_GUIDE.md`](docs/MOBILE_TESTING_GUIDE.md)
+for the operational guide.
+
+---
+
 ## 10. Future expansion roadmap
 
-### Phase 2 (within ~1 month of Day 1 publish):
-- Mobile testing via Appium — Sauce Labs Demo App (`my-demo-app-rn`)
+### Phase 2.2 (mobile follow-up):
+- iOS coverage via XCUITest (separate macOS-runner workflow)
 - Visual regression testing (Playwright snapshot comparison)
 
 ### Phase 3 (long-term):
