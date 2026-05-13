@@ -53,3 +53,4 @@ appium.log
 # Claude Code session config + local agent guidance
 .claude/
 CLAUDE.md
+README_TEMPLATE.md
