@@ -50,5 +50,6 @@ apps/
 *.ipa
 appium.log
 
-# Claude Code session config
+# Claude Code session config + local agent guidance
 .claude/
+CLAUDE.md
