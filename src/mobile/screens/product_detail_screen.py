@@ -15,9 +15,18 @@ from src.utils.mobile_step import mobile_step
 
 class ProductDetailScreen(BaseScreen):
     _ADD_TO_CART = (AppiumBy.ACCESSIBILITY_ID, "Add To Cart button")
-    _PRODUCT_NAME = (AppiumBy.ACCESSIBILITY_ID, "product name")
+    # The product detail screen in my-demo-app-rn does not expose a
+    # dedicated `product name` testID — the name is rendered inside the
+    # `product description` block alongside the description text. Using
+    # that as the readable identity is the most stable signal that the
+    # detail screen rendered.
+    _PRODUCT_NAME = (AppiumBy.ACCESSIBILITY_ID, "product description")
     _PRODUCT_PRICE = (AppiumBy.ACCESSIBILITY_ID, "product price")
     _CART_BADGE = (AppiumBy.ACCESSIBILITY_ID, "cart badge")
+    _CART_BADGE_COUNT = (
+        AppiumBy.XPATH,
+        '//*[@content-desc="cart badge"]//android.widget.TextView',
+    )
 
     @mobile_step("Tap Add To Cart")
     def tap_add_to_cart(self) -> None:
@@ -37,7 +46,8 @@ class ProductDetailScreen(BaseScreen):
 
     @mobile_step("Read cart badge count")
     def get_cart_badge_count(self) -> int:
-        elements = self.driver.find_elements(*self._CART_BADGE)
+        """Read count from TextView inside the cart-badge ViewGroup."""
+        elements = self.driver.find_elements(*self._CART_BADGE_COUNT)
         if not elements:
             return 0
         text = elements[0].text.strip()

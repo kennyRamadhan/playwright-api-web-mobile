@@ -42,7 +42,8 @@ class CheckoutScreen(BaseScreen):
 
     # Review + confirmation
     _PLACE_ORDER_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Place Order button")
-    _ORDER_CONFIRMATION = (AppiumBy.ACCESSIBILITY_ID, "Checkout Complete")
+    # Confirmation page is identified by its screen container content-desc.
+    _ORDER_CONFIRMATION = (AppiumBy.ACCESSIBILITY_ID, "checkout complete screen")
 
     @mobile_step("Fill shipping address for {full_name}")
     def fill_shipping_address(

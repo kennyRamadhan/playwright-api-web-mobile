@@ -120,25 +120,24 @@ pytest
 
 See [`docs/ENVIRONMENT_SETUP.md`](docs/ENVIRONMENT_SETUP.md) for detailed setup including CI environment.
 
-### Mobile tests (Android emulator required)
+### Mobile tests (Android device or emulator)
 
-Mobile tests need an Android emulator and a running Appium server. One-time setup:
-
-```bash
-npm install -g appium                       # Appium 2 runtime
-appium driver install uiautomator2          # Android driver
-python scripts/download_apk.py              # fetch demo APK (gitignored, ~30 MB)
-```
-
-Then in two terminals:
+One-time setup (Appium runtime — APK and server are auto-managed):
 
 ```bash
-# Terminal 1
-appium                                      # start Appium server on :4723
-
-# Terminal 2
-uv run pytest tests/mobile -m mobile -v     # emulator must be running
+npm install -g appium
+appium driver install uiautomator2
 ```
+
+Then just plug in a device (or start an emulator) and run:
+
+```bash
+uv run pytest tests/mobile -m mobile -v
+```
+
+The first run auto-downloads the APK (~30 MB, cached), auto-starts
+an Appium server if one isn't already running, and auto-detects the
+device (real device preferred over emulator) with no manual config.
 
 See [`docs/MOBILE_TESTING_GUIDE.md`](docs/MOBILE_TESTING_GUIDE.md) for the full walkthrough.
 

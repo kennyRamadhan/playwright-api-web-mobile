@@ -24,9 +24,13 @@ import urllib.request
 from pathlib import Path
 
 APK_URL = (
-    "https://github.com/saucelabs/my-demo-app-rn/releases/download/v1.3.0/Android-MyDemoAppRN.apk"
+    "https://github.com/saucelabs/my-demo-app-rn/releases/download/v1.3.0/"
+    "Android-MyDemoAppRN.1.3.0.build-244.apk"
 )
 APK_DIR = Path(__file__).parent.parent / "apps"
+# Local filename intentionally simpler than the upstream asset name —
+# the upstream embeds a build number that would force every code path
+# referencing the APK to know the build number. We rename on disk.
 APK_PATH = APK_DIR / "Android-MyDemoAppRN.apk"
 
 

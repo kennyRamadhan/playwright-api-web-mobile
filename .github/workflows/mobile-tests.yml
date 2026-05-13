@@ -69,16 +69,11 @@ jobs:
           path: apps/Android-MyDemoAppRN.apk
           key: my-demo-app-rn-v1.3.0-apk
 
-      - name: Download APK
-        if: steps.apk-cache.outputs.cache-hit != 'true'
-        run: uv run python scripts/download_apk.py
-
-      - name: Start Appium server in background
-        run: |
-          nohup appium --log-level info > appium.log 2>&1 &
-          # Wait briefly for the server to bind
-          sleep 3
-          curl -s http://127.0.0.1:4723/status || (cat appium.log && exit 1)
+      # APK download + Appium server lifecycle are both auto-managed by
+      # the test session fixtures (see tests/mobile/conftest.py). We
+      # only need to make sure Appium is on PATH (done above by npm i)
+      # and the device is reachable via adb (handled by the emulator
+      # runner action below).
 
       - name: Run mobile tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -93,6 +88,10 @@ jobs:
           script: |
             adb wait-for-device
             adb shell input keyevent 82
+            # CI pins to the emulator's runtime to avoid the auto-detect
+            # branch picking up stale device entries.
+            export DEVICE_NAME=emulator-5554
+            export PLATFORM_VERSION=12
             uv run pytest tests/mobile -m mobile -v \
               --alluredir=reports/allure-results-mobile
 

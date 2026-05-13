@@ -35,7 +35,14 @@ class LoginScreen(BaseScreen):
     _USERNAME_INPUT = (AppiumBy.ACCESSIBILITY_ID, "Username input field")
     _PASSWORD_INPUT = (AppiumBy.ACCESSIBILITY_ID, "Password input field")
     _LOGIN_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Login button")
+    # `generic-error-message` is the container ViewGroup; the actual
+    # error text lives in a child TextView. Reading `.text` on the
+    # container returns "" — must descend to the TextView.
     _ERROR_MESSAGE = (AppiumBy.ACCESSIBILITY_ID, "generic-error-message")
+    _ERROR_MESSAGE_TEXT = (
+        AppiumBy.XPATH,
+        '//*[@content-desc="generic-error-message"]//android.widget.TextView',
+    )
     _MENU_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "open menu")
     _LOGIN_MENU_ITEM = (AppiumBy.ACCESSIBILITY_ID, "menu item log in")
 
@@ -69,4 +76,4 @@ class LoginScreen(BaseScreen):
 
     @mobile_step("Read error message")
     def get_error_message(self) -> str:
-        return str(self.find(*self._ERROR_MESSAGE).text)
+        return str(self.find(*self._ERROR_MESSAGE_TEXT).text)

@@ -45,31 +45,47 @@ npm install -g appium
 appium driver install uiautomator2
 
 # 3. Create an AVD (Android Virtual Device) via Android Studio
-#    or with avdmanager from the command line. Use API 31, Pixel 5.
+#    or with avdmanager. Any API level and profile is fine —
+#    platform version is auto-detected via `adb getprop`.
 
 # 4. Install Python deps
 uv sync
-
-# 5. Download the demo APK (~30 MB, cached locally, gitignored)
-python scripts/download_apk.py
 ```
+
+That's it. No manual APK download, no Appium server config, no
+hardcoded device names.
 
 ## Running tests locally
 
-Two terminals:
-
 ```bash
-# Terminal 1: start emulator (if not already running)
-emulator -avd <your-avd-name>
+# Start an emulator OR plug in a real device with USB debugging
+emulator -avd <your-avd-name>    # or: skip if device is plugged in
 
-# Then start the Appium server (foreground)
-appium
-```
-
-```bash
-# Terminal 2: run mobile tests
+# Run the suite — first run auto-downloads the APK + starts Appium
 uv run pytest tests/mobile -m mobile -v
 ```
+
+The suite will:
+
+1. Download `apps/Android-MyDemoAppRN.apk` if not cached (~30 MB).
+2. Start an Appium server in the background if one is not running
+   on `:4723` (auto-stopped on session teardown).
+3. Auto-detect the device via `adb devices`, preferring a real
+   physical device over an emulator if both are present.
+4. Auto-detect platform version via `adb shell getprop`.
+
+### Overrides
+
+| Env var | Purpose | Default |
+|---|---|---|
+| `DEVICE_NAME` | Pin to a specific serial | auto-detected |
+| `PLATFORM_VERSION` | Pin to a specific Android version | auto-detected |
+| `APP_PATH` | Use a different APK | `apps/Android-MyDemoAppRN.apk` |
+| `APPIUM_SERVER_URL` | Use a remote server (e.g. Sauce Labs) | `http://127.0.0.1:4723` |
+| `APPIUM_AUTO_SERVER` | Set `0` to disable auto-start | `1` |
+
+CI sets `DEVICE_NAME`/`PLATFORM_VERSION` explicitly to pin against
+the emulator the workflow boots. Local development doesn't need to.
 
 ## Architecture
 

@@ -17,6 +17,13 @@ from src.utils.mobile_step import mobile_step
 class ProductListScreen(BaseScreen):
     _PRODUCT_ITEM = (AppiumBy.ACCESSIBILITY_ID, "store item")
     _CART_BADGE = (AppiumBy.ACCESSIBILITY_ID, "cart badge")
+    # Cart badge ViewGroup contains a child TextView with the count.
+    # When cart is empty, the TextView is absent (not just blank), so
+    # find_elements + len()==0 means "0 items".
+    _CART_BADGE_COUNT = (
+        AppiumBy.XPATH,
+        '//*[@content-desc="cart badge"]//android.widget.TextView',
+    )
     _SORT_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "sort button")
 
     @mobile_step("Get product count on catalog screen")
@@ -30,8 +37,12 @@ class ProductListScreen(BaseScreen):
 
     @mobile_step("Read cart badge count")
     def get_cart_badge_count(self) -> int:
-        """Return the current cart badge number, or 0 if badge not present."""
-        elements = self.driver.find_elements(*self._CART_BADGE)
+        """Return cart count from the TextView inside the cart-badge ViewGroup.
+
+        When cart is empty the count TextView is absent, so a 0-length
+        find_elements result means "0 items".
+        """
+        elements = self.driver.find_elements(*self._CART_BADGE_COUNT)
         if not elements:
             return 0
         text = elements[0].text.strip()
