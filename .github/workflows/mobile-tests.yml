@@ -85,15 +85,15 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
+          # NOTE: reactivecircus/android-emulator-runner executes EACH
+          # line of `script:` as a separate `sh -c`, so backslash line
+          # continuation and `export` statements do not carry across
+          # lines. Keep the pytest invocation on one line and inline
+          # env vars with the `env` prefix.
           script: |
             adb wait-for-device
             adb shell input keyevent 82
-            # CI pins to the emulator's runtime to avoid the auto-detect
-            # branch picking up stale device entries.
-            export DEVICE_NAME=emulator-5554
-            export PLATFORM_VERSION=12
-            uv run pytest tests/mobile -m mobile -v \
-              --alluredir=reports/allure-results-mobile
+            env DEVICE_NAME=emulator-5554 PLATFORM_VERSION=12 uv run pytest tests/mobile -m mobile -v --alluredir=reports/allure-results-mobile
 
       - name: Upload Allure results
         if: always()
